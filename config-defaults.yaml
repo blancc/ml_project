@@ -1,0 +1,4 @@
+# Wandb default config. file
+
+n_epochs:
+  value: 999
