@@ -7,6 +7,8 @@ import torch
 
 wandb.init(project='ml_project', entity='no_name')
 
+device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+
 train_loader, valid_loader = data.get_loaders()
 
 model = models.Net()

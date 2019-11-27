@@ -1,5 +1,5 @@
 # Dataset classes
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader, random_split
 
 
 class SignalDataset(Dataset):
@@ -13,6 +13,9 @@ class SignalDataset(Dataset):
         pass
 
 
-def get_loaders():
-    # https://stackoverflow.com/questions/50544730/how-do-i-split-a-custom-dataset-into-training-and-test-datasets
-    pass
+def get_loaders(split_percent=0.8):
+    dataset = SignalDataset()
+    train_size = int(split_percent * len(dataset))
+    test_size = len(dataset) - train_size
+
+    return random_split(dataset, [train_size, test_size])
