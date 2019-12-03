@@ -5,3 +5,6 @@ n_epochs:
 
 learning_rate:
   value: 0.00001
+
+model:
+  value: ""
