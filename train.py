@@ -24,6 +24,8 @@ wandb.watch(model)
 
 FILE_NAME = f"{model.name}_{LEARNING_RATE}_{NB_EPOCHS}"
 
+model.load_state_dict(torch.load(f"weights/{FILE_NAME}.pt"))
+
 criterion = torch.nn.L1Loss()
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
