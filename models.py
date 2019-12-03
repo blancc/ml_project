@@ -57,10 +57,10 @@ class Conv2D(nn.Module):
         self.conv2 = nn.Conv2d(in_dim, out_dim, 3, padding=1)
 
     def forward(self, x):
-        x = F.relu(self.conv1)
-        x = F.relu(self.conv2)
-        x = F.max_pool2d(x, 2)
-        return x
+        out = F.relu(self.conv1(x))
+        out = F.relu(self.conv2(out))
+        out = F.max_pool2d(out, 2)
+        return out
 
 
 class Conv1D(nn.Module):
@@ -69,18 +69,37 @@ class Conv1D(nn.Module):
         self.conv2 = nn.Conv1d(in_dim, out_dim, 3, padding=1)
 
     def forward(self, x):
-        x = F.relu(self.conv1)
-        x = F.relu(self.conv2)
-        x = F.max_pool1d(x, 2)
-        return x
+        out = F.relu(self.conv1(x))
+        out = F.relu(self.conv2(out))
+        out = F.max_pool1d(out, 2)
+        return out
 
 
 class Net(nn.Module):
-    def __init__(self, model):
-        self.name = TODO
+    def __init__(self, model, dropout=0.4):
+        self.name = model
+        self.dropout = nn.Dropout(dropout)
+
+        if model == "Conv1D":
+            self.block1 = Conv1D(TODO, TODO)
+            self.block2 = Conv1D(TODO, TODO)
+
+        if model == "Conv2D":
+            self.block1 = Conv2D(TODO, TODO)
+            self.block2 = Conv2D(TODO, TODO)
+
         self.fc1 = nn.Linear(TODO, TODO)
         self.fc2 = nn.Linear(TODO, TODO)
         self.fc3 = nn.Linear(TODO, TODO)
 
-    def forward(self):
-        pass
+    def forward(self, x):
+        out = self.block1(x)
+        out = self.block2(out)
+        out = self.dropout(F.relu(self.fc1(out)))
+        out = self.dropout(F.relu(self.fc2(out)))
+        out = self.dropout(F.relu(self.fc3(out)))
+
+        out[out >= 0] = 1
+        out[out < 0] = -1
+
+        return out

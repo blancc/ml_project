@@ -17,7 +17,7 @@ DEVICE = torch.device(
 
 train_loader, valid_loader = data.get_loaders()
 
-model = models.Net()
+model = models.Net(MODEL)
 
 FILE_NAME = f"{model.name}_{LEARNING_RATE}_{NB_EPOCHS}"
 
