@@ -1,10 +1,19 @@
 # Misc.: dataset preprocessing, data visualization, ...
+import torch
 import numpy as np
 import matplotlib.pyplot as plt
 
 
 def load_data(snr, code, index):
     pass
+
+
+def compute_accuracy(model, loader):
+
+    model.eval()
+    for X, y in loader:
+        with torch.no_grad():
+            pass
 
 
 if __name__ == "__main__":

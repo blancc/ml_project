@@ -2,3 +2,6 @@
 
 n_epochs:
   value: 999
+
+learning_rate:
+  value: 0.00001
