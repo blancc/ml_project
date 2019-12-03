@@ -18,9 +18,6 @@ def compute_accuracy(model, loader):
 
         y.view(-1)
 
-        X[X < 0] = -1.0
-        X[X > 0] = 1.0
-
         score += (X == y).sum()
         length += len(y)
 
