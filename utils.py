@@ -10,10 +10,21 @@ def load_data(snr, code, index):
 
 def compute_accuracy(model, loader):
 
+    score = 0
+    length = 0
     model.eval()
+
     for X, y in loader:
-        with torch.no_grad():
-            pass
+
+        y.view(-1)
+
+        X[X < 0] = -1.0
+        X[X > 0] = 1.0
+
+        score += (X == y).sum()
+        length += len(y)
+
+    return score / length
 
 
 if __name__ == "__main__":
