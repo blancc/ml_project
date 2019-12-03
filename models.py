@@ -2,6 +2,7 @@
 
 import torch.nn as nn
 import torch
+import torch.nn.functional as F
 
 
 class PositionalEncoding(nn.Module):
@@ -50,9 +51,36 @@ class Transformer(nn.Module):
         return out
 
 
+class Conv2D(nn.Module):
+    def __init__(self, in_dim, out_dim):
+        self.conv1 = nn.Conv2d(in_dim, out_dim, 3, padding=1)
+        self.conv2 = nn.Conv2d(in_dim, out_dim, 3, padding=1)
+
+    def forward(self, x):
+        x = F.relu(self.conv1)
+        x = F.relu(self.conv2)
+        x = F.max_pool2d(x, 2)
+        return x
+
+
+class Conv1D(nn.Module):
+    def __init__(self, in_dim, out_dim):
+        self.conv1 = nn.Conv1d(in_dim, out_dim, 3, padding=1)
+        self.conv2 = nn.Conv1d(in_dim, out_dim, 3, padding=1)
+
+    def forward(self, x):
+        x = F.relu(self.conv1)
+        x = F.relu(self.conv2)
+        x = F.max_pool1d(x, 2)
+        return x
+
+
 class Net(nn.Module):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, model):
+        self.name = TODO
+        self.fc1 = nn.Linear(TODO, TODO)
+        self.fc2 = nn.Linear(TODO, TODO)
+        self.fc3 = nn.Linear(TODO, TODO)
 
     def forward(self):
         pass
