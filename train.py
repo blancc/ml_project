@@ -40,6 +40,10 @@ for i in range(NB_EPOCHS):
         optimizer.zero_grad()
 
         Y = model(X)
+
+        Y[Y >= 0] = 1.
+        Y[Y < 0] = -1.
+
         loss = criterion(Y, y)
 
         loss.backward()

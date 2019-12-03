@@ -99,7 +99,4 @@ class Net(nn.Module):
         out = self.dropout(F.relu(self.fc2(out)))
         out = self.dropout(F.relu(self.fc3(out)))
 
-        out[out >= 0] = 1.
-        out[out < 0] = -1.
-
         return out
