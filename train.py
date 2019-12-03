@@ -20,6 +20,8 @@ train_loader, valid_loader = data.get_loaders()
 model = models.Net(MODEL)
 model.to(DEVICE)
 
+wandb.watch(model)
+
 FILE_NAME = f"{model.name}_{LEARNING_RATE}_{NB_EPOCHS}"
 
 criterion = torch.nn.L1Loss()
@@ -41,7 +43,14 @@ for i in range(NB_EPOCHS):
         loss.backward()
         optimizer.step()
 
-    accuracy = compute_accuracy(model, valid_loader)
-    print(f"Epoch : {i}/{NB_EPOCHS} ; Evaluation accuracy : {accuracy}")
+        wandb.log({"loss": loss})
+
+    train_accuracy = compute_accuracy(model, train_loader)
+    test_accuracy = compute_accuracy(model, valid_loader)
+
+    wandb.log({"train_accuracy": train_accuracy})
+    wandb.log({"test_accuracy": test_accuracy})
+    print(
+        f"Epoch: {i}/{NB_EPOCHS}\n\tTrain accuracy: {train_accuracy}\n\tTest accuracy: {test_accuracy}\n\n")
 
     torch.save(model.state_dict(), f"weights/{FILE_NAME}.pt")
