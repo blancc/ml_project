@@ -26,6 +26,7 @@ def compute_accuracy(model, loader):
         y = torch.flatten(y, 1)
 
         score += (Y == y).sum()
+        print(score)
         length += len(y)
 
     return score / length

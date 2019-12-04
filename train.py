@@ -24,7 +24,7 @@ if os.path.exists(f"weights/{FILE_NAME}.pt"):
 else:
     print("Weights not found")
 
-criterion = torch.nn.L1Loss()
+criterion = torch.nn.L1Loss().to(DEVICE)
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
 for i in range(NB_EPOCHS):
@@ -39,9 +39,6 @@ for i in range(NB_EPOCHS):
 
         Y = model(X)
 
-        Y[Y >= 0] = 1.
-        Y[Y < 0] = -1.
-
         loss = criterion(Y, torch.flatten(y, 1))
 
         loss.backward()
@@ -49,6 +46,7 @@ for i in range(NB_EPOCHS):
 
         wandb.log({"loss": loss})
 
+    model.eval()
     print("Evaluation")
     train_accuracy = compute_accuracy(model, train_loader)
     test_accuracy = compute_accuracy(model, valid_loader)

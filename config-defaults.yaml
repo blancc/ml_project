@@ -7,7 +7,7 @@ learning_rate:
   value: 0.00001
 
 batch_size:
-  value: 16
+  value: 8
 
 model:
   # "Conv1D", "Conv2D"
