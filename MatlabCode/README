@@ -1,0 +1,6 @@
+Matched filter demonstration implemented on MATLAB Platform
+
+It can help to verify the performance of Matched filter 
+             & check the every details of the simulation system
+
+Execute the 'main_MatchFilterTest.m' file to run the simulation 
