@@ -1,9 +1,11 @@
 # Main file: dataloader instanciation, model training, evaluation
-# TODO: data parallel + device + todos & pass + verbose
+# TODO: data parallel + normalisation + hidden sizes ?
 import wandb
 import models
 import data
 import torch
+import os
+from tqdm import tqdm
 
 from utils import compute_accuracy
 
@@ -14,28 +16,34 @@ NB_EPOCHS = wandb.config.n_epochs
 MODEL = wandb.config.model
 DEVICE = torch.device(
     "cuda") if torch.cuda.is_available() else torch.device("cpu")
+print(f"Running on {DEVICE}")
+BATCH_SIZE = wandb.config.batch_size
 
-train_loader, valid_loader = data.get_loaders()
+train_loader, valid_loader = data.get_loaders(BATCH_SIZE)
 
 model = models.Net(MODEL)
 model.to(DEVICE)
 
-wandb.watch(model)
+# wandb.watch(model)
 
 FILE_NAME = f"{model.name}_{LEARNING_RATE}_{NB_EPOCHS}"
 
-model.load_state_dict(torch.load(f"weights/{FILE_NAME}.pt"))
+if os.path.exists(f"weights/{FILE_NAME}.pt"):
+    print("Weights found")
+    model.load_state_dict(torch.load(f"weights/{FILE_NAME}.pt"))
+else:
+    print("Weights not found")
 
 criterion = torch.nn.L1Loss()
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
 for i in range(NB_EPOCHS):
     model.train()
-    for i_batch, batch in enumerate(train_loader):
-
+    print("Training")
+    for i_batch, batch in enumerate(tqdm(train_loader)):
         X, y = batch
-        X.to(DEVICE)
-        y.to(DEVICE)
+        X = X.to(DEVICE)
+        y = y.to(DEVICE)
 
         optimizer.zero_grad()
 
@@ -44,13 +52,14 @@ for i in range(NB_EPOCHS):
         Y[Y >= 0] = 1.
         Y[Y < 0] = -1.
 
-        loss = criterion(Y, y)
+        loss = criterion(Y, torch.flatten(y, 1))
 
         loss.backward()
         optimizer.step()
 
         wandb.log({"loss": loss})
 
+    print("Evaluation")
     train_accuracy = compute_accuracy(model, train_loader)
     test_accuracy = compute_accuracy(model, valid_loader)
 

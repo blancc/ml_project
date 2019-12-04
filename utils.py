@@ -2,6 +2,7 @@
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
+import torchaudio
 
 
 def load_data(snr, code, index):
@@ -36,5 +37,10 @@ if __name__ == "__main__":
         y = [line.strip(' \n').split() for line in f]
         y = np.array(y[1::], dtype=np.float64)
 
-    plt.plot(real)
+    specgram = torchaudio.transforms.Spectrogram(n_fft=15)(torch.from_numpy(real).unsqueeze(0))
+
+    print("Shape of spectrogram: {}".format(specgram.size()))
+
+    plt.figure()
+    plt.imshow(specgram.log2()[0, :, :].numpy())
     plt.show()

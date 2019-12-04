@@ -6,6 +6,9 @@ n_epochs:
 learning_rate:
   value: 0.00001
 
+batch_size:
+  value: 16
+
 model:
   # "Conv1D", "Conv2D"
   value: "Conv2D"

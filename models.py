@@ -3,6 +3,7 @@
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
+import torchaudio
 
 
 class PositionalEncoding(nn.Module):
@@ -53,8 +54,9 @@ class Transformer(nn.Module):
 
 class Conv2D(nn.Module):
     def __init__(self, in_dim, out_dim):
+        super().__init__()
         self.conv1 = nn.Conv2d(in_dim, out_dim, 3, padding=1)
-        self.conv2 = nn.Conv2d(in_dim, out_dim, 3, padding=1)
+        self.conv2 = nn.Conv2d(out_dim, out_dim, 3, padding=1)
 
     def forward(self, x):
         out = F.relu(self.conv1(x))
@@ -65,8 +67,9 @@ class Conv2D(nn.Module):
 
 class Conv1D(nn.Module):
     def __init__(self, in_dim, out_dim):
+        super().__init__()
         self.conv1 = nn.Conv1d(in_dim, out_dim, 3, padding=1)
-        self.conv2 = nn.Conv1d(in_dim, out_dim, 3, padding=1)
+        self.conv2 = nn.Conv1d(out_dim, out_dim, 3, padding=1)
 
     def forward(self, x):
         out = F.relu(self.conv1(x))
@@ -77,24 +80,28 @@ class Conv1D(nn.Module):
 
 class Net(nn.Module):
     def __init__(self, model, dropout=0.4):
+        super().__init__()
         self.name = model
         self.dropout = nn.Dropout(dropout)
 
         if model == "Conv1D":
-            self.block1 = Conv1D(TODO, TODO)
-            self.block2 = Conv1D(TODO, TODO)
+            self.block1 = Conv1D(1, 64)
+            self.block2 = Conv1D(64, 128)
+            self.fc1 = nn.Linear(128*512, 256)
+            self.fc2 = nn.Linear(256, 128)
+            self.fc3 = nn.Linear(128, 64)
 
         if model == "Conv2D":
-            self.block1 = Conv2D(TODO, TODO)
-            self.block2 = Conv2D(TODO, TODO)
-
-        self.fc1 = nn.Linear(TODO, TODO)
-        self.fc2 = nn.Linear(TODO, TODO)
-        self.fc3 = nn.Linear(TODO, TODO)
+            self.block1 = Conv2D(1, 64)
+            self.block2 = Conv2D(64, 128)
+            self.fc1 = nn.Linear(128*4*34, 256)
+            self.fc2 = nn.Linear(256, 128)
+            self.fc3 = nn.Linear(128, 64)
 
     def forward(self, x):
         out = self.block1(x)
         out = self.block2(out)
+        out = torch.flatten(out, 1)
         out = self.dropout(F.relu(self.fc1(out)))
         out = self.dropout(F.relu(self.fc2(out)))
         out = self.dropout(F.relu(self.fc3(out)))
