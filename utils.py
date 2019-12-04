@@ -3,6 +3,7 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import torchaudio
+from tqdm import tqdm
 
 
 def load_data(snr, code, index):
@@ -14,9 +15,9 @@ def compute_accuracy(model, loader):
     length = 0
     model.eval()
 
-    for X, y in loader:
-        X = X.to(DEVICE)
-        y = y.to(DEVICE)
+    for X, y in tqdm(loader):
+        X = X.to('cuda')
+        y = y.to('cuda')
 
         Y = model(X)
 

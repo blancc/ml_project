@@ -1,23 +1,15 @@
 # Main file: dataloader instanciation, model training, evaluation
-# TODO: data parallel + normalisation + hidden sizes ?
-import wandb
+# TODO: data parallel + normalisation + hidden sizes ? + setup global var.
 import models
 import data
 import torch
 import os
 from tqdm import tqdm
+import wandb
 
 from utils import compute_accuracy
+from setup import BATCH_SIZE, MODEL, DEVICE, LEARNING_RATE, NB_EPOCHS, FILE_NAME
 
-wandb.init(project='ml_project', entity='no_name')
-
-LEARNING_RATE = wandb.config.learning_rate
-NB_EPOCHS = wandb.config.n_epochs
-MODEL = wandb.config.model
-DEVICE = torch.device(
-    "cuda") if torch.cuda.is_available() else torch.device("cpu")
-print(f"Running on {DEVICE}")
-BATCH_SIZE = wandb.config.batch_size
 
 train_loader, valid_loader = data.get_loaders(BATCH_SIZE)
 
@@ -25,8 +17,6 @@ model = models.Net(MODEL)
 model.to(DEVICE)
 
 # wandb.watch(model)
-
-FILE_NAME = f"{model.name}_{LEARNING_RATE}_{NB_EPOCHS}"
 
 if os.path.exists(f"weights/{FILE_NAME}.pt"):
     print("Weights found")
@@ -40,7 +30,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 for i in range(NB_EPOCHS):
     model.train()
     print("Training")
-    for i_batch, batch in enumerate(tqdm(train_loader)):
+    for batch in tqdm(train_loader):
         X, y = batch
         X = X.to(DEVICE)
         y = y.to(DEVICE)
