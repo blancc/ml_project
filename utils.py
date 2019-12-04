@@ -16,10 +16,10 @@ def compute_accuracy(model, loader):
     for X, y in loader:
         y.view(-1)
 
-        Y = model(x)
+        Y = model(X)
 
-        Y[Y >= 0] = 1.
-        Y[Y < 0] = -1.
+        # Y[Y >= 0] = 1. # Test with or without
+        # Y[Y < 0] = -1.
 
         score += (Y == y).sum()
         length += len(y)
@@ -28,17 +28,13 @@ def compute_accuracy(model, loader):
 
 
 if __name__ == "__main__":
-    # with open('dataset/SNR7/QPSK/wvform_rx_real_rollOff9', 'r') as f:
-    #     real = [line.strip(' \n') for line in f]
-    #     real = np.array(real[1::], dtype=np.float64)
-
-    # with open('dataset/SNR7/QPSK/wvform_rx_imag_rollOff9', 'r') as f:
-    #     imag = [line.strip(' \n') for line in f]
-    #     imag = np.array(imag[1::], dtype=np.float64)
-
-    with open('dataset/SNR7/QPSK/wvform_rx_real_rollOff9', 'r') as f:
+    with open('dataset/SNR10/QPSK/wvform_rx_real_rollOff1_batch1', 'r') as f:
         real = [line.strip(' \n') for line in f]
         real = np.array(real[1::], dtype=np.float64)
+
+    with open(f'dataset/SNR10/QPSK/sym_tx_rollOff1_batch1', 'r') as f:
+        y = [line.strip(' \n').split() for line in f]
+        y = np.array(y[1::], dtype=np.float64)
 
     plt.plot(real)
     plt.show()
