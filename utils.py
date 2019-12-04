@@ -15,12 +15,14 @@ def compute_accuracy(model, loader):
     model.eval()
 
     for X, y in loader:
-        y.view(-1)
+        X = X.to(DEVICE)
+        y = y.to(DEVICE)
 
         Y = model(X)
 
         # Y[Y >= 0] = 1. # Test with or without
         # Y[Y < 0] = -1.
+        y = torch.flatten(y, 1)
 
         score += (Y == y).sum()
         length += len(y)
