@@ -1,5 +1,5 @@
 # Main file: dataloader instanciation, model training, evaluation
-# TODO: data parallel + normalisation + hidden sizes ? + setup global var.
+# TODO: data parallel + normalisation + hidden sizes ? + flatten direct
 import models
 import data
 import torch

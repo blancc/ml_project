@@ -1,9 +1,8 @@
 # Dataset classes
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, random_split
 import numpy as np
 import torch
 import torchaudio
-from torch.utils.data.sampler import SubsetRandomSampler
 from setup import MODEL
 
 
@@ -31,7 +30,7 @@ class SignalDataset(Dataset):
         if MODEL == 'Conv2D':
             return self.fft(X.unsqueeze(0)), y
         if MODEL == 'Conv1D':
-            return X, y
+            return X.unsqueeze(0), y
 
     def __len__(self):
         return len(self.rolloffs)*self.n_batch

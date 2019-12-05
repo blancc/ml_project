@@ -6,10 +6,6 @@ import torchaudio
 from tqdm import tqdm
 
 
-def load_data(snr, code, index):
-    pass
-
-
 def compute_accuracy(model, loader):
     score = 0
     length = 0
@@ -21,12 +17,10 @@ def compute_accuracy(model, loader):
 
         Y = model(X)
 
-        # Y[Y >= 0] = 1. # Test with or without
-        # Y[Y < 0] = -1.
+        Y[Y >= 0] = 1.  # Test with or without
+        Y[Y < 0] = -1.
         y = torch.flatten(y, 1)
-
-        score += (Y == y).sum()
-        print(score)
+        score += (Y.cpu() == y.cpu()).sum().item()
         length += len(y)
 
     return score / length
