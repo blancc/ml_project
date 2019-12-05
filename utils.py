@@ -18,8 +18,9 @@ def visualize_predictions(model, dataloader):
         t = torch.cat((t, Y.cpu()))
     t = t.view(2, -1)
     t = t.detach().numpy()
-    plt.scatter(t[0], t[1])
-    plt.show()
+    fig, ax = plt.subplots()
+    ax.scatter(t[0], t[1], marker="x")
+    return fig
 
 
 def compute_accuracy(model, loader):

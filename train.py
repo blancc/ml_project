@@ -48,12 +48,12 @@ for i in range(NB_EPOCHS):
         wandb.log({"loss": loss})
 
     print("Evaluation")
-    visualize_predictions(model, valid_loader)
     train_accuracy = compute_accuracy(model, train_loader)
     test_accuracy = compute_accuracy(model, valid_loader)
 
     wandb.log({"train_accuracy": train_accuracy})
     wandb.log({"test_accuracy": test_accuracy})
+    wandb.log({"results": wandb.Image(visualize_predictions(model, valid_loader))})
     print(
         f"Epoch: {i}/{NB_EPOCHS}\n\tTrain accuracy: {train_accuracy}\n\tTest accuracy: {test_accuracy}\n\n")
 
