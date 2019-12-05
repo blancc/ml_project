@@ -3,26 +3,39 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import torchaudio
+from setup import DEVICE
 from tqdm import tqdm
+
+
+def visualize_predictions(model, dataloader):
+    model.eval()
+    t = torch.Tensor()
+    for batch in dataloader:
+        X, y = batch
+        X = X.to(DEVICE)
+
+        Y = model(X)
+        t = torch.cat((t, Y.cpu()))
+    t = t.view(2, -1)
+    t = t.detach().numpy()
+    plt.scatter(t[0], t[1])
+    plt.show()
 
 
 def compute_accuracy(model, loader):
     score = 0
     length = 0
     model.eval()
-
     for X, y in tqdm(loader):
         X = X.to('cuda')
         y = y.to('cuda')
 
         Y = model(X)
-
-        Y[Y >= 0] = 1.  # Test with or without
+        Y[Y >= 0] = 1.
         Y[Y < 0] = -1.
         y = torch.flatten(y, 1)
         score += (Y.cpu() == y.cpu()).sum().item()
-        length += len(y)
-
+        length += y.numel()
     return score / length
 
 

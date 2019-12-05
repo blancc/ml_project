@@ -104,6 +104,6 @@ class Net(nn.Module):
         out = torch.flatten(out, 1)
         out = self.dropout(F.relu(self.fc1(out)))
         out = self.dropout(F.relu(self.fc2(out)))
-        out = self.dropout(F.relu(self.fc3(out)))
+        out = self.dropout(self.fc3(out))
 
         return out

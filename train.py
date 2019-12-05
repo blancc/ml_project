@@ -6,8 +6,9 @@ import torch
 import os
 from tqdm import tqdm
 import wandb
-
-from utils import compute_accuracy
+import numpy as np
+import matplotlib.pyplot as plt
+from utils import compute_accuracy, visualize_predictions
 from setup import BATCH_SIZE, MODEL, DEVICE, LEARNING_RATE, NB_EPOCHS, FILE_NAME
 
 
@@ -46,8 +47,8 @@ for i in range(NB_EPOCHS):
 
         wandb.log({"loss": loss})
 
-    model.eval()
     print("Evaluation")
+    visualize_predictions(model, valid_loader)
     train_accuracy = compute_accuracy(model, train_loader)
     test_accuracy = compute_accuracy(model, valid_loader)
 
