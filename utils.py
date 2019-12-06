@@ -10,18 +10,18 @@ from tqdm import tqdm
 def visualize_predictions(model, dataloader):
     model.eval()
     t = torch.Tensor()
-    for batch in dataloader:
-        X, y = batch
-        model.cpu()
+    batch = next(iter(dataloader))
+    X, y = batch
+    model.cpu()
 
-        Y = model(X)
-        t = torch.cat((t, Y.cpu()))
-    print("AAA")
-    t = t.view(2, -1)
-    t = t.detach().numpy()
-    fig, ax = plt.subplots()
-    ax.scatter(t[0], t[1], marker="x")
-    return fig
+    Y = model(X)
+
+    model.to(DEVICE)
+    Y = Y.view(2, -1)
+    Y = Y.detach().numpy()
+    plt.clf()
+    plt.scatter(Y[0], Y[1], marker="x")
+    return plt
 
 
 def compute_accuracy(model, loader):
