@@ -12,10 +12,11 @@ def visualize_predictions(model, dataloader):
     t = torch.Tensor()
     for batch in dataloader:
         X, y = batch
-        X = X.to(DEVICE)
+        model.cpu()
 
         Y = model(X)
         t = torch.cat((t, Y.cpu()))
+    print("AAA")
     t = t.view(2, -1)
     t = t.detach().numpy()
     fig, ax = plt.subplots()
@@ -28,8 +29,8 @@ def compute_accuracy(model, loader):
     length = 0
     model.eval()
     for X, y in tqdm(loader):
-        X = X.to('cuda')
-        y = y.to('cuda')
+        X = X.to(DEVICE)
+        y = y.to(DEVICE)
 
         Y = model(X)
         Y[Y >= 0] = 1.
@@ -49,7 +50,8 @@ if __name__ == "__main__":
         y = [line.strip(' \n').split() for line in f]
         y = np.array(y[1::], dtype=np.float64)
 
-    specgram = torchaudio.transforms.Spectrogram(n_fft=15)(torch.from_numpy(real).unsqueeze(0))
+    specgram = torchaudio.transforms.Spectrogram(
+        n_fft=127, win_length=4)(torch.from_numpy(real).unsqueeze(0))
 
     print("Shape of spectrogram: {}".format(specgram.size()))
 

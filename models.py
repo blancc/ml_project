@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch
 import torch.nn.functional as F
 import torchaudio
+from setup import SUBSAMPLE
 
 
 class PositionalEncoding(nn.Module):
@@ -68,12 +69,13 @@ class Conv2D(nn.Module):
 class Conv1D(nn.Module):
     def __init__(self, in_dim, out_dim):
         super().__init__()
+        self.af = torch.tanh
         self.conv1 = nn.Conv1d(in_dim, out_dim, 3, padding=1)
         self.conv2 = nn.Conv1d(out_dim, out_dim, 3, padding=1)
 
     def forward(self, x):
-        out = F.relu(self.conv1(x))
-        out = F.relu(self.conv2(out))
+        out = self.af(self.conv1(x))
+        out = self.af(self.conv2(out))
         out = F.max_pool1d(out, 2)
         return out
 
@@ -83,18 +85,19 @@ class Net(nn.Module):
         super().__init__()
         self.name = model
         self.dropout = nn.Dropout(dropout)
+        self.af = torch.tanh
 
         if model == "Conv1D":
             self.block1 = Conv1D(1, 64)
             self.block2 = Conv1D(64, 128)
-            self.fc1 = nn.Linear(128*512, 256)
+            self.fc1 = nn.Linear(128*512//SUBSAMPLE, 256)
             self.fc2 = nn.Linear(256, 128)
             self.fc3 = nn.Linear(128, 64)
 
         if model == "Conv2D":
             self.block1 = Conv2D(1, 64)
             self.block2 = Conv2D(64, 128)
-            self.fc1 = nn.Linear(128*4*34, 256)
+            self.fc1 = nn.Linear(128*16*256, 256)
             self.fc2 = nn.Linear(256, 128)
             self.fc3 = nn.Linear(128, 64)
 
@@ -102,8 +105,8 @@ class Net(nn.Module):
         out = self.block1(x)
         out = self.block2(out)
         out = torch.flatten(out, 1)
-        out = self.dropout(F.relu(self.fc1(out)))
-        out = self.dropout(F.relu(self.fc2(out)))
+        out = self.dropout(self.af(self.fc1(out)))
+        out = self.dropout(self.af(self.fc2(out)))
         out = self.dropout(self.fc3(out))
 
         return out

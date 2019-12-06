@@ -10,5 +10,6 @@ DEVICE = torch.device(
     "cuda") if torch.cuda.is_available() else torch.device("cpu")
 print(f"Running on {DEVICE}")
 BATCH_SIZE = wandb.config.batch_size
+SUBSAMPLE = wandb.config.subsample
 
 FILE_NAME = f"{MODEL}_{LEARNING_RATE}_{NB_EPOCHS}"

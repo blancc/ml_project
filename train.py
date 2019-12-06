@@ -17,7 +17,7 @@ train_loader, valid_loader = data.get_loaders(BATCH_SIZE)
 model = models.Net(MODEL)
 model.to(DEVICE)
 
-# wandb.watch(model)
+wandb.watch(model)
 
 if os.path.exists(f"weights/{FILE_NAME}.pt"):
     print("Weights found")
@@ -53,7 +53,7 @@ for i in range(NB_EPOCHS):
 
     wandb.log({"train_accuracy": train_accuracy})
     wandb.log({"test_accuracy": test_accuracy})
-    wandb.log({"results": wandb.Image(visualize_predictions(model, valid_loader))})
+    #wandb.log({"results": wandb.Image(visualize_predictions(model, valid_loader))})
     print(
         f"Epoch: {i}/{NB_EPOCHS}\n\tTrain accuracy: {train_accuracy}\n\tTest accuracy: {test_accuracy}\n\n")
 

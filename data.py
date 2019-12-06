@@ -3,15 +3,15 @@ from torch.utils.data import Dataset, DataLoader, random_split
 import numpy as np
 import torch
 import torchaudio
-from setup import MODEL
+from setup import MODEL, SUBSAMPLE
 
 
 class SignalDataset(Dataset):
     def __init__(self, sub_sample=1):
         self.sub_sample = sub_sample
-        self.rolloffs = np.array([1])
+        self.rolloffs = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
         self.n_batch = 500
-        self.fft = torchaudio.transforms.Spectrogram(n_fft=31)
+        self.fft = torchaudio.transforms.Spectrogram(n_fft=127, win_length=4)
 
     def __getitem__(self, index):
         ro_index = index // self.n_batch
@@ -24,7 +24,7 @@ class SignalDataset(Dataset):
 
         with open(f'dataset/SNR10/QPSK/sym_tx_rollOff{self.rolloffs[ro_index]}_batch{batch}', 'r') as f:
             y = [line.strip(' \n').split() for line in f]
-        y = np.array(y[1::self.sub_sample], dtype=np.float64)
+        y = np.array(y[1::], dtype=np.float64)
         y = torch.from_numpy(y).float()
 
         if MODEL == 'Conv2D':
@@ -37,7 +37,7 @@ class SignalDataset(Dataset):
 
 
 def get_loaders(batch_size, split_percent=0.8):
-    dataset = SignalDataset()
+    dataset = SignalDataset(sub_sample=SUBSAMPLE)
 
     train_size = int(split_percent * len(dataset))
     test_size = len(dataset) - train_size
