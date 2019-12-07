@@ -101,6 +101,11 @@ class Net(nn.Module):
             self.fc2 = nn.Linear(256, 128)
             self.fc3 = nn.Linear(128, 64)
 
+        if model == "MLP":
+            self.fc1 = nn.Linear(2048//SUBSAMPLE, 256)
+            self.fc2 = nn.Linear(256, 128)
+            self.fc3 = nn.Linear(128, 64)
+
     def forward(self, x):
         if self.name == "Conv1D":
             out = self.block1(x)
@@ -119,6 +124,8 @@ class Net(nn.Module):
             out = self.fc3(out)
 
         if self.name == "MLP":
-            pass
+            out = self.dropout(self.af(self.fc1(x)))
+            out = self.dropout(self.af(self.fc2(out)))
+            out = self.fc3(out)
 
         return out

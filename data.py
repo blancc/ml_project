@@ -32,6 +32,8 @@ class SignalDataset(Dataset):
             return self.fft(X.unsqueeze(0)), y
         if MODEL == 'Conv1D':
             return X.unsqueeze(0), y
+        if MODEL == 'MLP':
+            return X, y
 
     def __len__(self):
         return len(self.rolloffs)*self.n_batch
