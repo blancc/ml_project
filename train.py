@@ -16,6 +16,7 @@ from setup import BATCH_SIZE, MODEL, DEVICE, LEARNING_RATE, NB_EPOCHS, FILE_NAME
 train_loader, valid_loader = data.get_loaders(BATCH_SIZE)
 
 model = models.Net(MODEL, dropout=DROPOUT)
+model.apply(models.init_weights)
 model.to(DEVICE)
 
 wandb.watch(model)

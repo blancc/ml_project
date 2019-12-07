@@ -126,6 +126,12 @@ class Net(nn.Module):
         if self.name == "MLP":
             out = self.dropout(self.af(self.fc1(x)))
             out = self.dropout(self.af(self.fc2(out)))
-            out = self.fc3(out)
+            out = self.dropout(self.fc3(out))
 
         return out
+
+
+def init_weights(m):
+    if type(m) in {nn.Linear, nn.Conv2d, nn.Conv1d}:
+        torch.nn.init.xavier_uniform_(m.weight)
+        m.bias.data.fill_(0.01)
