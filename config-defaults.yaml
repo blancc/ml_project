@@ -7,11 +7,11 @@ learning_rate:
   value: 0.0001
 
 batch_size:
-  value: 32
+  value: 2
 
 model:
   # "Conv1D", "Conv2D"
-  value: "Conv1D"
+  value: "Conv2D"
 
 subsample:
   value: 2

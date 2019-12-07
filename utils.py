@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import torchaudio
-from setup import DEVICE
+from setup import DEVICE, SUBSAMPLE
 from tqdm import tqdm
 
 
@@ -45,7 +45,7 @@ def compute_accuracy(model, loader):
 if __name__ == "__main__":
     with open('dataset/SNR10/QPSK/wvform_rx_real_rollOff1_batch1', 'r') as f:
         real = [line.strip(' \n') for line in f]
-        real = np.array(real[1::], dtype=np.float64)
+        real = np.array(real[1::SUBSAMPLE], dtype=np.float64)
 
     with open(f'dataset/SNR10/QPSK/sym_tx_rollOff1_batch1', 'r') as f:
         y = [line.strip(' \n').split() for line in f]
@@ -57,6 +57,6 @@ if __name__ == "__main__":
     print("Shape of spectrogram: {}".format(specgram.size()))
 
     plt.figure()
-    # plt.imshow(specgram.log2()[0, :, :].numpy())
+    plt.imshow(specgram.log2()[0, :, :].numpy())
     plt.plot(real)
     plt.show()

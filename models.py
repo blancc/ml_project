@@ -97,7 +97,7 @@ class Net(nn.Module):
         if model == "Conv2D":
             self.block1 = Conv2D(1, 64)
             self.block2 = Conv2D(64, 128)
-            self.fc1 = nn.Linear(128*16*256, 256)
+            self.fc1 = nn.Linear(128*16*256//SUBSAMPLE, 256)
             self.fc2 = nn.Linear(256, 128)
             self.fc3 = nn.Linear(128, 64)
 
@@ -117,5 +117,8 @@ class Net(nn.Module):
             out = self.dropout(self.af(self.fc1(out)))
             out = self.dropout(self.af(self.fc2(out)))
             out = self.fc3(out)
+
+        if self.name == "MLP":
+            pass
 
         return out
