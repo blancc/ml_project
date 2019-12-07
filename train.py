@@ -10,13 +10,14 @@ import wandb
 import numpy as np
 import matplotlib.pyplot as plt
 from utils import compute_accuracy, visualize_predictions
-from setup import BATCH_SIZE, MODEL, DEVICE, LEARNING_RATE, NB_EPOCHS, FILE_NAME, DROPOUT
+from setup import BATCH_SIZE, MODEL, DEVICE, LEARNING_RATE, NB_EPOCHS, FILE_NAME, DROPOUT, WEIGHTS_INIT
 
 
 train_loader, valid_loader = data.get_loaders(BATCH_SIZE)
 
 model = models.Net(MODEL, dropout=DROPOUT)
-model.apply(models.init_weights)
+if WEIGHTS_INIT:
+    model.apply(models.init_weights)
 model.to(DEVICE)
 
 wandb.watch(model)

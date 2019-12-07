@@ -12,5 +12,6 @@ print(f"Running on {DEVICE}")
 BATCH_SIZE = wandb.config.batch_size
 SUBSAMPLE = wandb.config.subsample
 DROPOUT = wandb.config.dropout
+WEIGHTS_INIT = wandb.config.weights_init
 
 FILE_NAME = f"{MODEL}_{LEARNING_RATE}_{NB_EPOCHS}"
