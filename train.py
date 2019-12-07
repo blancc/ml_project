@@ -1,5 +1,6 @@
 # Main file: dataloader instanciation, model training, evaluation
 # TODO: data parallel + normalisation + hidden sizes ? + flatten direct
+# Ideas: binaryce +
 import models
 import data
 import torch
@@ -23,9 +24,10 @@ if os.path.exists(f"weights/{FILE_NAME}.pt"):
     print("Weights found")
     model.load_state_dict(torch.load(f"weights/{FILE_NAME}.pt"))
 else:
+    os.makedirs("weights/", exist_ok=True)
     print("Weights not found")
 
-criterion = torch.nn.L1Loss().to(DEVICE)
+criterion = torch.nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
 for i in range(NB_EPOCHS):
@@ -53,7 +55,8 @@ for i in range(NB_EPOCHS):
 
     wandb.log({"train_accuracy": train_accuracy})
     wandb.log({"test_accuracy": test_accuracy})
-    #wandb.log({"results": wandb.Image(visualize_predictions(model, valid_loader))})
+    wandb.log({"train_results": wandb.Image(visualize_predictions(model, train_loader))})
+    wandb.log({"test_results": wandb.Image(visualize_predictions(model, valid_loader))})
     print(
         f"Epoch: {i}/{NB_EPOCHS}\n\tTrain accuracy: {train_accuracy}\n\tTest accuracy: {test_accuracy}\n\n")
 

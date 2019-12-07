@@ -81,7 +81,7 @@ class Conv1D(nn.Module):
 
 
 class Net(nn.Module):
-    def __init__(self, model, dropout=0.4):
+    def __init__(self, model, dropout=0.5):
         super().__init__()
         self.name = model
         self.dropout = nn.Dropout(dropout)
@@ -102,11 +102,20 @@ class Net(nn.Module):
             self.fc3 = nn.Linear(128, 64)
 
     def forward(self, x):
-        out = self.block1(x)
-        out = self.block2(out)
-        out = torch.flatten(out, 1)
-        out = self.dropout(self.af(self.fc1(out)))
-        out = self.dropout(self.af(self.fc2(out)))
-        out = self.dropout(self.fc3(out))
+        if self.name == "Conv1D":
+            out = self.block1(x)
+            out = self.block2(out)
+            out = torch.flatten(out, 1)
+            out = self.dropout(self.af(self.fc1(out)))
+            out = self.dropout(self.af(self.fc2(out)))
+            out = self.fc3(out)
+
+        if self.name == "Conv2D":
+            out = self.block1(x)
+            out = self.block2(out)
+            out = torch.flatten(out, 1)
+            out = self.dropout(self.af(self.fc1(out)))
+            out = self.dropout(self.af(self.fc2(out)))
+            out = self.fc3(out)
 
         return out

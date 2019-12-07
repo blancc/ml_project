@@ -9,7 +9,7 @@ from setup import MODEL, SUBSAMPLE
 class SignalDataset(Dataset):
     def __init__(self, sub_sample=1):
         self.sub_sample = sub_sample
-        self.rolloffs = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        self.rolloffs = [1, 2]#[1, 2, 3, 4, 5, 6, 7, 8, 9]
         self.n_batch = 500
         self.fft = torchaudio.transforms.Spectrogram(n_fft=127, win_length=4)
 

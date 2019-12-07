@@ -21,6 +21,7 @@ def visualize_predictions(model, dataloader):
     Y = Y.detach().numpy()
     plt.clf()
     plt.scatter(Y[0], Y[1], marker="x")
+    plt.scatter(y[0], y[1], marker="o")
     return plt
 
 
@@ -56,5 +57,6 @@ if __name__ == "__main__":
     print("Shape of spectrogram: {}".format(specgram.size()))
 
     plt.figure()
-    plt.imshow(specgram.log2()[0, :, :].numpy())
+    # plt.imshow(specgram.log2()[0, :, :].numpy())
+    plt.plot(real)
     plt.show()
