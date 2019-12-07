@@ -10,12 +10,12 @@ import wandb
 import numpy as np
 import matplotlib.pyplot as plt
 from utils import compute_accuracy, visualize_predictions
-from setup import BATCH_SIZE, MODEL, DEVICE, LEARNING_RATE, NB_EPOCHS, FILE_NAME
+from setup import BATCH_SIZE, MODEL, DEVICE, LEARNING_RATE, NB_EPOCHS, FILE_NAME, DROPOUT
 
 
 train_loader, valid_loader = data.get_loaders(BATCH_SIZE)
 
-model = models.Net(MODEL)
+model = models.Net(MODEL, dropout=DROPOUT)
 model.to(DEVICE)
 
 wandb.watch(model)

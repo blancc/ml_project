@@ -10,8 +10,11 @@ batch_size:
   value: 8
 
 model:
-  # "Conv1D", "Conv2D"
+  # "Conv1D", "Conv2D", "MLP"
   value: "MLP"
 
 subsample:
   value: 4
+
+dropout:
+  value: 0.5
