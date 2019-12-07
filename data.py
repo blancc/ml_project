@@ -2,7 +2,6 @@
 from torch.utils.data import Dataset, DataLoader, random_split
 import numpy as np
 import torch
-import torchaudio
 import torch.functional as F
 from setup import MODEL, SUBSAMPLE
 
@@ -12,7 +11,9 @@ class SignalDataset(Dataset):
         self.sub_sample = sub_sample
         self.rolloffs = [1, 2]  # [1, 2, 3, 4, 5, 6, 7, 8, 9]
         self.n_batch = 500
-        self.fft = torchaudio.transforms.Spectrogram(n_fft=127, win_length=4)
+        if MODEL == 'Conv2D':
+            import torchaudio
+            self.fft = torchaudio.transforms.Spectrogram(n_fft=127, win_length=4)
 
     def __getitem__(self, index):
         ro_index = index // self.n_batch
