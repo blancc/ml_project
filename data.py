@@ -34,7 +34,7 @@ class SignalDataset(Dataset):
         if MODEL == 'Conv1D':
             return X.unsqueeze(0), y
         if MODEL == 'MLP':
-            return X, y*4
+            return X, y
         if MODEL == 'Trans':
             return X.view(WORD_LENGTH, -1), y
 

@@ -10,7 +10,8 @@ import wandb
 import numpy as np
 import matplotlib.pyplot as plt
 from utils import compute_accuracy, visualize_predictions
-from setup import BATCH_SIZE, MODEL, DEVICE, LEARNING_RATE, NB_EPOCHS, FILE_NAME, DROPOUT, WEIGHTS_INIT
+from setup import (BATCH_SIZE, MODEL, DEVICE, LEARNING_RATE, NB_EPOCHS,
+                   FILE_NAME, DROPOUT, WEIGHTS_INIT, ALPHA)
 
 
 train_loader, valid_loader = data.get_loaders(BATCH_SIZE)
@@ -29,7 +30,8 @@ else:
     os.makedirs("weights/", exist_ok=True)
     print("Weights not found")
 
-criterion = torch.nn.MSELoss()
+# criterion = torch.nn.MSELoss()
+criterion = lambda x,y:((x-y)**2-ALPHA*x**2).mean()
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
 for i in range(NB_EPOCHS):

@@ -4,14 +4,14 @@ n_epochs:
   value: 999
 
 learning_rate:
-  value: 0.0001
+  value: 1.e-4
 
 batch_size:
   value: 64
 
 model:
   # "Conv1D", "Conv2D", "MLP", "Trans"
-  value: "Trans"
+  value: "MLP"
 
 subsample:
   value: 4
@@ -20,7 +20,10 @@ dropout:
   value: 0.5
 
 weights_init:
-  value: False
+  value: True
+
+alpha:
+  value: 2.
 
 # TRANS PARAMS
 word_length:

@@ -4,13 +4,13 @@ import torch.nn as nn
 import torch
 import torch.nn.functional as F
 import torchaudio
-from setup import SUBSAMPLE, WORD_LENGTH, N_HEAD, N_LAYERS, DEVICE
+from setup import SUBSAMPLE, WORD_LENGTH, N_HEAD, N_LAYERS
 
 
 class PositionalEncoding(nn.Module):
     def __init__(self, d_model, max_len=5000):
         super().__init__()
-        pe = torch.zeros(max_len, d_model).to(DEVICE)
+        pe = torch.zeros(max_len, d_model)
         position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
         div_term = torch.pow(1.e4, torch.arange(
             0, d_model, 2).float() / d_model)
@@ -20,13 +20,14 @@ class PositionalEncoding(nn.Module):
         self.register_buffer('pe', pe)
 
     def forward(self, x):
+        self.pe.to(x.device)
         x = x + self.pe[:x.size(0), :]
         return x
 
 
 class Transformer(nn.Module):
     def __init__(self, d_model, max_len, dim_feedforward=2048, dropout=0.1,
-                 n_head=2, n_layers=6, device=DEVICE):
+                 n_head=2, n_layers=6):
         super().__init__()
         self.d_model = d_model
         self.pos_encoder = PositionalEncoding(d_model, max_len=max_len)
@@ -34,9 +35,9 @@ class Transformer(nn.Module):
         layers = nn.TransformerEncoderLayer(d_model, n_head,
                                             dim_feedforward, dropout)
         self.transformer_encoder = nn.TransformerEncoder(layers, n_layers)
-        self.device = device
 
     def forward(self, x, lengths=None):
+        device = x.device
         if lengths:
             mask = []
             for i in range(len(lengths)):
@@ -44,11 +45,11 @@ class Transformer(nn.Module):
                 mask_v = torch.zeros(self.max_len+1)
                 mask_v[:lengths[i]] = 1
                 mask.append(mask_v)
-            mask = torch.cat(mask).to(self.device)
+            mask = torch.cat(mask).to(device)
         else:
             mask = None
 
-        out = torch.zeros(self.max_len, x.size(1), x.size(2)).to(self.device)
+        out = torch.zeros(self.max_len, x.size(1), x.size(2)).to(device)
         out[:x.size(0), :, :] = x
         out = self.pos_encoder(out)
         out = self.transformer_encoder(out, mask=mask)
@@ -88,7 +89,7 @@ class Net(nn.Module):
         super().__init__()
         self.name = model
         self.dropout = nn.Dropout(dropout)
-        self.af = torch.tanh
+        self.af = torch.nn.Tanh()
 
         if model == "Conv1D":
             self.block1 = Conv1D(1, 64)
@@ -105,9 +106,9 @@ class Net(nn.Module):
             self.fc3 = nn.Linear(128, 64)
 
         if model == "MLP":
-            self.fc1 = nn.Linear(2048//SUBSAMPLE, 256)
-            self.fc2 = nn.Linear(256, 128)
-            self.fc3 = nn.Linear(128, 64)
+            self.fc1 = nn.Linear(2048//SUBSAMPLE, 1024)
+            self.fc2 = nn.Linear(1024, 512)
+            self.fc3 = nn.Linear(512, 64)
 
         if model == "Trans":
             self.rnn = Transformer(WORD_LENGTH, 2048//(WORD_LENGTH*SUBSAMPLE),
@@ -135,7 +136,7 @@ class Net(nn.Module):
         if self.name == "MLP":
             out = self.dropout(self.af(self.fc1(x)))
             out = self.dropout(self.af(self.fc2(out)))
-            out = self.dropout(self.fc3(out))
+            out = self.dropout(self.af(self.fc3(out)))
 
         if self.name == "Trans":
             out = x.permute((2, 0, 1))
