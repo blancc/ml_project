@@ -7,11 +7,11 @@ learning_rate:
   value: 0.0001
 
 batch_size:
-  value: 8
+  value: 64
 
 model:
-  # "Conv1D", "Conv2D", "MLP"
-  value: "MLP"
+  # "Conv1D", "Conv2D", "MLP", "Trans"
+  value: "Trans"
 
 subsample:
   value: 4
@@ -21,3 +21,13 @@ dropout:
 
 weights_init:
   value: False
+
+# TRANS PARAMS
+word_length:
+  value: 16
+
+n_head:
+  value: 2
+
+n_layers:
+  value: 2

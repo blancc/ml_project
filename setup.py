@@ -13,5 +13,8 @@ BATCH_SIZE = wandb.config.batch_size
 SUBSAMPLE = wandb.config.subsample
 DROPOUT = wandb.config.dropout
 WEIGHTS_INIT = wandb.config.weights_init
+WORD_LENGTH = wandb.config.word_length
+N_HEAD = wandb.config.n_head
+N_LAYERS = wandb.config.n_layers
 
 FILE_NAME = f"{MODEL}_{LEARNING_RATE}_{NB_EPOCHS}"

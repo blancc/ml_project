@@ -3,7 +3,7 @@ from torch.utils.data import Dataset, DataLoader, random_split
 import numpy as np
 import torch
 import torch.functional as F
-from setup import MODEL, SUBSAMPLE
+from setup import MODEL, SUBSAMPLE, WORD_LENGTH
 
 
 class SignalDataset(Dataset):
@@ -34,7 +34,9 @@ class SignalDataset(Dataset):
         if MODEL == 'Conv1D':
             return X.unsqueeze(0), y
         if MODEL == 'MLP':
-            return X, y
+            return X, y*4
+        if MODEL == 'Trans':
+            return X.view(WORD_LENGTH, -1), y
 
     def __len__(self):
         return len(self.rolloffs)*self.n_batch
