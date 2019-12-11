@@ -17,5 +17,7 @@ WORD_LENGTH = wandb.config.word_length
 N_HEAD = wandb.config.n_head
 N_LAYERS = wandb.config.n_layers
 ALPHA = wandb.config.alpha
+SIGNAL_LENGTH = wandb.config.signal_length
+TARGET_LENGTH = wandb.config.target_length
 
 FILE_NAME = f"{MODEL}"

@@ -7,7 +7,7 @@ learning_rate:
   value: 1.e-4
 
 batch_size:
-  value: 64
+  value: 32
 
 model:
   # "Conv1D", "Conv2D", "MLP", "Trans"
@@ -23,7 +23,13 @@ weights_init:
   value: True
 
 alpha:
-  value: 2.
+  value: 0.
+
+signal_length:
+  value: 8192
+
+target_length:
+  value: 128
 
 # TRANS PARAMS
 word_length:

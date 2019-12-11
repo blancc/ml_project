@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch
 import torch.nn.functional as F
 import torchaudio
-from setup import SUBSAMPLE, WORD_LENGTH, N_HEAD, N_LAYERS
+from setup import SUBSAMPLE, WORD_LENGTH, N_HEAD, N_LAYERS, SIGNAL_LENGTH, TARGET_LENGTH
 
 
 class PositionalEncoding(nn.Module):
@@ -96,25 +96,25 @@ class Net(nn.Module):
             self.block2 = Conv1D(64, 128)
             self.fc1 = nn.Linear(128*512//SUBSAMPLE, 256)
             self.fc2 = nn.Linear(256, 128)
-            self.fc3 = nn.Linear(128, 64)
+            self.fc3 = nn.Linear(128, TARGET_LENGTH)
 
         if model == "Conv2D":
             self.block1 = Conv2D(1, 64)
             self.block2 = Conv2D(64, 128)
             self.fc1 = nn.Linear(128*16*256//SUBSAMPLE, 256)
             self.fc2 = nn.Linear(256, 128)
-            self.fc3 = nn.Linear(128, 64)
+            self.fc3 = nn.Linear(128, TARGET_LENGTH)
 
         if model == "MLP":
-            self.fc1 = nn.Linear(2048//SUBSAMPLE, 1024)
+            self.fc1 = nn.Linear(SIGNAL_LENGTH//SUBSAMPLE, 1024)
             self.fc2 = nn.Linear(1024, 512)
-            self.fc3 = nn.Linear(512, 64)
+            self.fc3 = nn.Linear(512, TARGET_LENGTH)
 
         if model == "Trans":
-            self.rnn = Transformer(WORD_LENGTH, 2048//(WORD_LENGTH*SUBSAMPLE),
+            self.rnn = Transformer(WORD_LENGTH, SIGNAL_LENGTH//(WORD_LENGTH*SUBSAMPLE),
                                    n_head=N_HEAD, n_layers=N_LAYERS)
-            self.fc1 = nn.Linear(2048//SUBSAMPLE, 256)
-            self.fc2 = nn.Linear(256, 64)
+            self.fc1 = nn.Linear(SIGNAL_LENGTH//SUBSAMPLE, 256)
+            self.fc2 = nn.Linear(256, TARGET_LENGTH)
 
     def forward(self, x):
         if self.name == "Conv1D":
@@ -136,7 +136,7 @@ class Net(nn.Module):
         if self.name == "MLP":
             out = self.dropout(self.af(self.fc1(x)))
             out = self.dropout(self.af(self.fc2(out)))
-            out = self.dropout(self.af(self.fc3(out)))
+            out = self.dropout(2*self.af(self.fc3(out)))
 
         if self.name == "Trans":
             out = x.permute((2, 0, 1))

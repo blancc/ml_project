@@ -17,11 +17,11 @@ def visualize_predictions(model, dataloader):
     Y = model(X)
 
     model.to(DEVICE)
-    Y = Y.view(2, -1)
+    Y = Y[0].view(2, -1)
     Y = Y.detach().numpy()
     plt.clf()
     plt.scatter(Y[0], Y[1], marker="x")
-    plt.scatter(y[0], y[1], marker="o")
+    plt.scatter(y[0][0], y[0][1], marker="o")
     return plt
 
 
