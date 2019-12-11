@@ -21,7 +21,7 @@ def visualize_predictions(model, dataloader):
     Y = Y.detach().numpy()
     plt.clf()
     plt.scatter(Y[0], Y[1], marker="x")
-    plt.scatter(y[0][0], y[0][1], marker="o")
+    plt.scatter(y[0, :, 0], y[0, :, 1], marker="o")
     return plt
 
 
