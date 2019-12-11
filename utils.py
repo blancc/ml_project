@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import torchaudio
-from setup import DEVICE, SUBSAMPLE
+from setup import DEVICE, SUBSAMPLE, TARGET_LENGTH
 from tqdm import tqdm
 
 
@@ -17,11 +17,10 @@ def visualize_predictions(model, dataloader):
     Y = model(X)
 
     model.to(DEVICE)
-    Y = Y[0].view(2, -1)
     Y = Y.detach().numpy()
     plt.clf()
-    plt.scatter(Y[0], Y[1], marker="x")
-    plt.scatter(y[0, :, 0], y[0, :, 1], marker="o")
+    plt.scatter(Y[:, :TARGET_LENGTH//2], Y[:, TARGET_LENGTH//2:], marker="x")
+    plt.scatter(y[:, 0], y[:, 1], marker="o")
     return plt
 
 

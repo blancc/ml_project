@@ -23,7 +23,7 @@ weights_init:
   value: True
 
 alpha:
-  value: 0.
+  value: 0.1
 
 signal_length:
   value: 8192
