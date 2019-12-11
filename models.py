@@ -106,8 +106,8 @@ class Net(nn.Module):
             self.fc3 = nn.Linear(128, TARGET_LENGTH)
 
         if model == "MLP":
-            self.fc1 = nn.Linear(SIGNAL_LENGTH//SUBSAMPLE, 1024)
-            self.fc2 = nn.Linear(1024, 512)
+            self.fc1 = nn.Linear(SIGNAL_LENGTH//SUBSAMPLE, 2048)
+            self.fc2 = nn.Linear(2048, 512)
             self.fc3 = nn.Linear(512, TARGET_LENGTH)
 
         if model == "Trans":
@@ -134,8 +134,8 @@ class Net(nn.Module):
             out = self.fc3(out)
 
         if self.name == "MLP":
-            out = self.dropout(self.af(self.fc1(x)))
-            out = self.dropout(self.af(self.fc2(out)))
+            out = self.dropout(2*self.af(self.fc1(x)))
+            out = self.dropout(2*self.af(self.fc2(out)))
             out = self.dropout(2*self.af(self.fc3(out)))
 
         if self.name == "Trans":

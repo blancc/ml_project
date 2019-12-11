@@ -3,6 +3,9 @@
 n_epochs:
   value: 999
 
+keep_weights:
+  value: True
+
 learning_rate:
   value: 1.e-4
 
@@ -23,7 +26,7 @@ weights_init:
   value: True
 
 alpha:
-  value: 0.1
+  value: 1.
 
 signal_length:
   value: 8192

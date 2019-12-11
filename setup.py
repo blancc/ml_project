@@ -19,5 +19,6 @@ N_LAYERS = wandb.config.n_layers
 ALPHA = wandb.config.alpha
 SIGNAL_LENGTH = wandb.config.signal_length
 TARGET_LENGTH = wandb.config.target_length
+KEEP_WEIGHTS = wandb.config.keep_weights
 
 FILE_NAME = f"{MODEL}"

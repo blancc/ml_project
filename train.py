@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from utils import compute_accuracy, visualize_predictions
 from setup import (BATCH_SIZE, MODEL, DEVICE, LEARNING_RATE, NB_EPOCHS,
-                   FILE_NAME, DROPOUT, WEIGHTS_INIT, ALPHA)
+                   FILE_NAME, DROPOUT, WEIGHTS_INIT, ALPHA, KEEP_WEIGHTS)
 
 
 train_loader, valid_loader = data.get_loaders(BATCH_SIZE)
@@ -23,7 +23,7 @@ model.to(DEVICE)
 
 wandb.watch(model)
 
-if os.path.exists(f"weights/{FILE_NAME}.pt"):
+if KEEP_WEIGHTS and os.path.exists(f"weights/{FILE_NAME}.pt"):
     print("Weights found")
     model.load_state_dict(torch.load(f"weights/{FILE_NAME}.pt"))
 else:
@@ -31,7 +31,11 @@ else:
     print("Weights not found")
 
 # criterion = torch.nn.MSELoss()
-criterion = lambda x,y:((x-y)**2-ALPHA*x**2).mean()
+
+
+def criterion(x, y): return ((x-y)**2-ALPHA*x**2).mean()
+
+
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
 for i in range(NB_EPOCHS):
