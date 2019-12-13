@@ -17,7 +17,9 @@ def visualize_predictions(model, dataloader, denoiser=None):
         model.cpu()
 
         if denoiser:
+            denoiser.cpu()
             Y = denoiser(X)
+            denoiser.to(DEVICE)
         Y = model(Y)
 
         model.to(DEVICE)
