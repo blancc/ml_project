@@ -47,6 +47,6 @@ def get_loaders(batch_size, split_percent=0.8):
     test_size = len(dataset) - train_size
 
     train_set, test_set = random_split(dataset, [train_size, test_size])
-    train_loader = DataLoader(train_set, batch_size=batch_size)
-    test_loader = DataLoader(test_set, batch_size=batch_size)
+    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True)
     return train_loader, test_loader

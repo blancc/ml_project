@@ -45,7 +45,7 @@ else:
 def criterion(x, y): return ((x-y)**2-ALPHA*x**2).mean()
 
 
-optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
+optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-5)
 
 for i in range(NB_EPOCHS):
     model.train()

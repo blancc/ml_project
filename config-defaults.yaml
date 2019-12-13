@@ -7,23 +7,23 @@ keep_weights:
   value: True
 
 learning_rate:
-  value: 1.e-4
+  value: 5.e-4
 
 batch_size:
-  value: 64
+  value: 32
 
 model:
   # "Conv1D", "Conv2D", "MLP", "Trans", "Noise"
-  value: "MLP"
+  value: "Trans"
 
 subsample:
   value: 16
 
 dropout:
-  value: 0.8
+  value: 0.2
 
 weights_init:
-  value: False
+  value: True
 
 alpha:
   value: 1.
@@ -39,10 +39,10 @@ denoiser:
 
 # TRANS PARAMS
 word_length:
-  value: 16
+  value: 8
 
 n_head:
-  value: 2
+  value: 4
 
 n_layers:
-  value: 2
+  value: 4

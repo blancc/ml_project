@@ -73,7 +73,7 @@ class Conv2D(nn.Module):
 class Conv1D(nn.Module):
     def __init__(self, in_dim, out_dim):
         super().__init__()
-        self.af = torch.tanh
+        self.af = torch.selu
         self.conv1 = nn.Conv1d(in_dim, out_dim, 3, padding=1)
         self.conv2 = nn.Conv1d(out_dim, out_dim, 3, padding=1)
 
@@ -111,10 +111,10 @@ class Net(nn.Module):
 
         if model == "Conv1D":
             self.block1 = Conv1D(1, 64)
-            self.block2 = Conv1D(64, 128)
-            self.fc1 = nn.Linear(128*SIGNAL_LENGTH//4//SUBSAMPLE, 512)
-            self.fc2 = nn.Linear(512, 256)
-            self.fc3 = nn.Linear(256, TARGET_LENGTH)
+            # self.block2 = Conv1D(64, 128)
+            self.fc1 = nn.Linear(64*SIGNAL_LENGTH//2//SUBSAMPLE, 256)
+            self.fc2 = nn.Linear(256, 128)
+            self.fc3 = nn.Linear(128, TARGET_LENGTH)
 
         if model == "Conv2D":
             import torchaudio
@@ -127,8 +127,8 @@ class Net(nn.Module):
 
         if model == "MLP":
             self.fc1 = nn.Linear(SIGNAL_LENGTH//SUBSAMPLE, 4096)
-            self.fc2 = nn.Linear(4096, 1024)
-            self.fc3 = nn.Linear(1024, TARGET_LENGTH)
+            self.fc2 = nn.Linear(4096, 2048)
+            self.fc3 = nn.Linear(2048, TARGET_LENGTH)
 
         if model == "Trans":
             self.rnn = Transformer(WORD_LENGTH, SIGNAL_LENGTH//(WORD_LENGTH*SUBSAMPLE),
@@ -140,11 +140,11 @@ class Net(nn.Module):
         if self.name == "Conv1D":
             out = x.unsqueeze(1)
             out = self.block1(out)
-            out = self.block2(out)
+            # out = self.block2(out)
             out = torch.flatten(out, 1)
             out = self.dropout(self.af(self.fc1(out)))
             out = self.dropout(self.af(self.fc2(out)))
-            out = self.dropout(self.fc3(out))
+            out = self.dropout(self.af(self.fc3(out)))
 
         if self.name == "Conv2D":
             out = self.fft(x.unsqueeze(1))
@@ -161,8 +161,8 @@ class Net(nn.Module):
             out = self.dropout(self.af(self.fc3(out)))
 
         if self.name == "Trans":
-            out = x.view(BATCH_SIZE, WORD_LENGTH, -1)
-            out = x.permute((2, 0, 1))
+            out = x.view(x.size(0), WORD_LENGTH, -1)
+            out = out.permute((2, 0, 1))
             out = self.rnn(out)
             out = out.permute((1, 0, 2))
             out = torch.flatten(out, 1)
