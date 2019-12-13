@@ -11,9 +11,6 @@ class SignalDataset(Dataset):
         self.sub_sample = sub_sample
         self.rolloffs = [1, 2]  # [1, 2, 3, 4, 5, 6, 7, 8, 9]
         self.n_batch = 500
-        if MODEL == 'Conv2D':
-            import torchaudio
-            self.fft = torchaudio.transforms.Spectrogram(n_fft=127, win_length=4)
 
     def __getitem__(self, index):
         ro_index = index // self.n_batch
@@ -37,16 +34,7 @@ class SignalDataset(Dataset):
             y = np.array(y[1::], dtype=np.float64)
             y = torch.from_numpy(y).float()
 
-        if MODEL == 'Conv2D':
-            return self.fft(X.unsqueeze(0)), y
-        if MODEL == 'Conv1D':
-            return X.unsqueeze(0), y
-        if MODEL == 'MLP':
-            return X, y
-        if MODEL == 'Noise':
-            return X, y
-        if MODEL == 'Trans':
-            return X.view(WORD_LENGTH, -1), y
+        return X, y
 
     def __len__(self):
         return len(self.rolloffs)*self.n_batch

@@ -20,5 +20,6 @@ ALPHA = wandb.config.alpha
 SIGNAL_LENGTH = wandb.config.signal_length
 TARGET_LENGTH = wandb.config.target_length
 KEEP_WEIGHTS = wandb.config.keep_weights
+DENOISER = wandb.config.denoiser
 
 FILE_NAME = f"{MODEL}"

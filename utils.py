@@ -8,55 +8,62 @@ from tqdm import tqdm
 import torch.functional as F
 
 
-def visualize_predictions(model, dataloader):
+def visualize_predictions(model, dataloader, denoiser=None):
     model.eval()
-    t = torch.Tensor()
-    batch = next(iter(dataloader))
-    X, y = batch
-    model.cpu()
+    with torch.no_grad():
+        t = torch.Tensor()
+        batch = next(iter(dataloader))
+        X, y = batch
+        model.cpu()
 
-    Y = model(X)
+        if denoiser:
+            Y = denoiser(X)
+        Y = model(Y)
 
-    model.to(DEVICE)
-    Y = Y.detach().numpy()
-    plt.clf()
-    plt.scatter(Y[:, :TARGET_LENGTH//2], Y[:, TARGET_LENGTH//2:], marker="x")
-    plt.scatter(y[:, 0], y[:, 1], marker="o")
-    return plt
+        model.to(DEVICE)
+        Y = Y.detach().numpy()
+        plt.clf()
+        plt.scatter(Y[:, :TARGET_LENGTH//2], Y[:, TARGET_LENGTH//2:], marker="x")
+        plt.scatter(y[:, 0], y[:, 1], marker="o")
+        return plt
 
 
 def visualize_noise(model, dataloader):
     model.eval()
-    t = torch.Tensor()
-    batch = next(iter(dataloader))
-    X, y = batch
-    model.cpu()
+    with torch.no_grad():
+        t = torch.Tensor()
+        batch = next(iter(dataloader))
+        X, y = batch
+        model.cpu()
 
-    Y = model(X)
+        Y = model(X)
 
-    model.to(DEVICE)
-    Y = Y.detach().numpy()
-    plt.clf()
-    plt.plot(np.arange(SIGNAL_LENGTH//SUBSAMPLE), Y[0])
-    plt.plot(np.arange(SIGNAL_LENGTH//SUBSAMPLE), y[0])
-    return plt
+        model.to(DEVICE)
+        Y = Y.detach().numpy()
+        plt.clf()
+        plt.plot(np.arange(SIGNAL_LENGTH//SUBSAMPLE), Y[0])
+        plt.plot(np.arange(SIGNAL_LENGTH//SUBSAMPLE), y[0])
+        return plt
 
 
-def compute_accuracy(model, loader):
+def compute_accuracy(model, loader, denoiser=None):
     score = 0
     length = 0
     model.eval()
-    for X, y in tqdm(loader):
-        X = X.to(DEVICE)
-        y = y.to(DEVICE)
+    with torch.no_grad():
+        for X, y in tqdm(loader):
+            X = X.to(DEVICE)
+            y = y.to(DEVICE)
 
-        Y = model(X)
-        Y[Y >= 0] = 1.
-        Y[Y < 0] = -1.
-        y = torch.flatten(y, 1)
-        score += (Y.cpu() == y.cpu()).sum().item()
-        length += y.numel()
-    return score / length
+            if denoiser:
+                Y = denoiser(X)
+            Y = model(Y)
+            Y[Y >= 0] = 1.
+            Y[Y < 0] = -1.
+            y = torch.flatten(y, 1)
+            score += (Y.cpu() == y.cpu()).sum().item()
+            length += y.numel()
+        return score / length
 
 
 if __name__ == "__main__":

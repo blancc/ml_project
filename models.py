@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch
 import torch.nn.functional as F
 import torchaudio
-from setup import SUBSAMPLE, WORD_LENGTH, N_HEAD, N_LAYERS, SIGNAL_LENGTH, TARGET_LENGTH
+from setup import SUBSAMPLE, WORD_LENGTH, N_HEAD, N_LAYERS, SIGNAL_LENGTH, TARGET_LENGTH, BATCH_SIZE
 
 
 class PositionalEncoding(nn.Module):
@@ -117,6 +117,8 @@ class Net(nn.Module):
             self.fc3 = nn.Linear(256, TARGET_LENGTH)
 
         if model == "Conv2D":
+            import torchaudio
+            self.fft = torchaudio.transforms.Spectrogram(n_fft=127, win_length=4)
             self.block1 = Conv2D(1, 64)
             self.block2 = Conv2D(64, 128)
             self.fc1 = nn.Linear(128*16*256//SUBSAMPLE, 256)
@@ -136,7 +138,8 @@ class Net(nn.Module):
 
     def forward(self, x):
         if self.name == "Conv1D":
-            out = self.block1(x)
+            out = x.unsqueeze(1)
+            out = self.block1(out)
             out = self.block2(out)
             out = torch.flatten(out, 1)
             out = self.dropout(self.af(self.fc1(out)))
@@ -144,7 +147,8 @@ class Net(nn.Module):
             out = self.dropout(self.fc3(out))
 
         if self.name == "Conv2D":
-            out = self.block1(x)
+            out = self.fft(x.unsqueeze(1))
+            out = self.block1(out)
             out = self.block2(out)
             out = torch.flatten(out, 1)
             out = self.dropout(self.af(self.fc1(out)))
@@ -157,6 +161,7 @@ class Net(nn.Module):
             out = self.dropout(self.af(self.fc3(out)))
 
         if self.name == "Trans":
+            out = x.view(BATCH_SIZE, WORD_LENGTH, -1)
             out = x.permute((2, 0, 1))
             out = self.rnn(out)
             out = out.permute((1, 0, 2))
