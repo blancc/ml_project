@@ -23,17 +23,27 @@ class SignalDataset(Dataset):
             X = [line.strip(' \n') for line in f]
         X = np.array(X[1::self.sub_sample], dtype=np.float64)
         X = torch.from_numpy(X).float()
+        X = X/abs(X).max()
 
-        with open(f'dataset/SNR10/QPSK/sym_tx_rollOff{self.rolloffs[ro_index]}_batch{batch}', 'r') as f:
-            y = [line.strip(' \n').split() for line in f]
-        y = np.array(y[1::], dtype=np.float64)
-        y = torch.from_numpy(y).float()
+        if MODEL == 'Noise':
+            with open(f'dataset/SNR10/QPSK/wvform_tx_real_rollOff{self.rolloffs[ro_index]}_batch{batch}', 'r') as f:
+                y = [line.strip(' \n').split() for line in f]
+            y = np.array(y[1::self.sub_sample], dtype=np.float64)
+            y = torch.from_numpy(y).float()
+            y = y/abs(y).max()
+        else:
+            with open(f'dataset/SNR10/QPSK/sym_tx_rollOff{self.rolloffs[ro_index]}_batch{batch}', 'r') as f:
+                y = [line.strip(' \n').split() for line in f]
+            y = np.array(y[1::], dtype=np.float64)
+            y = torch.from_numpy(y).float()
 
         if MODEL == 'Conv2D':
             return self.fft(X.unsqueeze(0)), y
         if MODEL == 'Conv1D':
             return X.unsqueeze(0), y
         if MODEL == 'MLP':
+            return X, y
+        if MODEL == 'Noise':
             return X, y
         if MODEL == 'Trans':
             return X.view(WORD_LENGTH, -1), y

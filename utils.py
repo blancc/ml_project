@@ -3,8 +3,9 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import torchaudio
-from setup import DEVICE, SUBSAMPLE, TARGET_LENGTH
+from setup import DEVICE, SUBSAMPLE, TARGET_LENGTH, SIGNAL_LENGTH
 from tqdm import tqdm
+import torch.functional as F
 
 
 def visualize_predictions(model, dataloader):
@@ -21,6 +22,23 @@ def visualize_predictions(model, dataloader):
     plt.clf()
     plt.scatter(Y[:, :TARGET_LENGTH//2], Y[:, TARGET_LENGTH//2:], marker="x")
     plt.scatter(y[:, 0], y[:, 1], marker="o")
+    return plt
+
+
+def visualize_noise(model, dataloader):
+    model.eval()
+    t = torch.Tensor()
+    batch = next(iter(dataloader))
+    X, y = batch
+    model.cpu()
+
+    Y = model(X)
+
+    model.to(DEVICE)
+    Y = Y.detach().numpy()
+    plt.clf()
+    plt.plot(np.arange(SIGNAL_LENGTH//SUBSAMPLE), Y[0])
+    plt.plot(np.arange(SIGNAL_LENGTH//SUBSAMPLE), y[0])
     return plt
 
 
@@ -45,6 +63,7 @@ if __name__ == "__main__":
     with open('dataset/SNR10/QPSK/wvform_rx_real_rollOff1_batch1', 'r') as f:
         real = [line.strip(' \n') for line in f]
         real = np.array(real[1::SUBSAMPLE], dtype=np.float64)
+        real = real/abs(real).max()
 
     with open(f'dataset/SNR10/QPSK/sym_tx_rollOff1_batch1', 'r') as f:
         y = [line.strip(' \n').split() for line in f]
@@ -56,6 +75,6 @@ if __name__ == "__main__":
     print("Shape of spectrogram: {}".format(specgram.size()))
 
     plt.figure()
-    plt.imshow(specgram.log2()[0, :, :].numpy())
+    # plt.imshow(specgram.log2()[0, :, :].numpy())
     plt.plot(real)
     plt.show()

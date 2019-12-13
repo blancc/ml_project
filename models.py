@@ -84,6 +84,24 @@ class Conv1D(nn.Module):
         return out
 
 
+class DeNoiser(nn.Module):
+    def __init__(self, dropout=0.5):
+        super().__init__()
+        self.name = "Noise"
+        self.dropout = nn.Dropout(dropout)
+
+        self.fc1 = nn.Linear(SIGNAL_LENGTH//SUBSAMPLE, SIGNAL_LENGTH//SUBSAMPLE)
+        self.fc1.weight.data.copy_(torch.eye(SIGNAL_LENGTH//SUBSAMPLE))
+        self.fc4 = nn.Linear(SIGNAL_LENGTH//SUBSAMPLE, SIGNAL_LENGTH//SUBSAMPLE)
+        self.fc4.weight.data.copy_(torch.eye(SIGNAL_LENGTH//SUBSAMPLE))
+
+    def forward(self, x):
+        out = F.tanh(self.fc1(x))
+        out = F.tanh(self.fc4(out))
+
+        return out
+
+
 class Net(nn.Module):
     def __init__(self, model, dropout=0.5):
         super().__init__()
@@ -94,9 +112,9 @@ class Net(nn.Module):
         if model == "Conv1D":
             self.block1 = Conv1D(1, 64)
             self.block2 = Conv1D(64, 128)
-            self.fc1 = nn.Linear(128*512//SUBSAMPLE, 256)
-            self.fc2 = nn.Linear(256, 128)
-            self.fc3 = nn.Linear(128, TARGET_LENGTH)
+            self.fc1 = nn.Linear(128*SIGNAL_LENGTH//4//SUBSAMPLE, 512)
+            self.fc2 = nn.Linear(512, 256)
+            self.fc3 = nn.Linear(256, TARGET_LENGTH)
 
         if model == "Conv2D":
             self.block1 = Conv2D(1, 64)
@@ -106,9 +124,9 @@ class Net(nn.Module):
             self.fc3 = nn.Linear(128, TARGET_LENGTH)
 
         if model == "MLP":
-            self.fc1 = nn.Linear(SIGNAL_LENGTH//SUBSAMPLE, 2048)
-            self.fc2 = nn.Linear(2048, 512)
-            self.fc3 = nn.Linear(512, TARGET_LENGTH)
+            self.fc1 = nn.Linear(SIGNAL_LENGTH//SUBSAMPLE, 4096)
+            self.fc2 = nn.Linear(4096, 1024)
+            self.fc3 = nn.Linear(1024, TARGET_LENGTH)
 
         if model == "Trans":
             self.rnn = Transformer(WORD_LENGTH, SIGNAL_LENGTH//(WORD_LENGTH*SUBSAMPLE),
@@ -134,9 +152,9 @@ class Net(nn.Module):
             out = self.fc3(out)
 
         if self.name == "MLP":
-            out = self.dropout(2*self.af(self.fc1(x)))
-            out = self.dropout(2*self.af(self.fc2(out)))
-            out = self.dropout(2*self.af(self.fc3(out)))
+            out = self.dropout(self.af(self.fc1(x)))
+            out = self.dropout(self.af(self.fc2(out)))
+            out = self.dropout(self.af(self.fc3(out)))
 
         if self.name == "Trans":
             out = x.permute((2, 0, 1))

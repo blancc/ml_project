@@ -10,20 +10,20 @@ learning_rate:
   value: 1.e-4
 
 batch_size:
-  value: 32
+  value: 64
 
 model:
-  # "Conv1D", "Conv2D", "MLP", "Trans"
-  value: "MLP"
+  # "Conv1D", "Conv2D", "MLP", "Trans", "Noise"
+  value: "Noise"
 
 subsample:
-  value: 4
+  value: 16
 
 dropout:
-  value: 0.5
+  value: 0.8
 
 weights_init:
-  value: True
+  value: False
 
 alpha:
   value: 1.
