@@ -69,7 +69,7 @@ def compute_accuracy(model, loader, denoiser=None):
 
 
 if __name__ == "__main__":
-    with open('dataset/SNR10/QPSK/wvform_rx_real_rollOff1_batch1', 'r') as f:
+    with open('dataset/SNR10/QPSK/wvform_tx_real_rollOff1_batch1', 'r') as f:
         real = [line.strip(' \n') for line in f]
         real = np.array(real[1::SUBSAMPLE], dtype=np.float64)
         real = real/abs(real).max()

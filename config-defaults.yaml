@@ -14,7 +14,7 @@ batch_size:
 
 model:
   # "Conv1D", "Conv2D", "MLP", "Trans", "Noise"
-  value: "Trans"
+  value: "MLP"
 
 subsample:
   value: 16
