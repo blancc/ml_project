@@ -2,10 +2,10 @@
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
-import torchaudio
 from setup import DEVICE, SUBSAMPLE, TARGET_LENGTH, SIGNAL_LENGTH
 from tqdm import tqdm
 import torch.functional as F
+import models
 
 
 def visualize_predictions(model, dataloader, denoiser=None):
@@ -69,21 +69,24 @@ def compute_accuracy(model, loader, denoiser=None):
 
 
 if __name__ == "__main__":
-    with open('dataset/SNR10/QPSK/wvform_tx_real_rollOff1_batch1', 'r') as f:
-        real = [line.strip(' \n') for line in f]
-        real = np.array(real[1::SUBSAMPLE], dtype=np.float64)
-        real = real/abs(real).max()
+    with open(f'dataset/SNR10/QPSK/wvform_rx_real_rollOff1_batch1', 'r') as f:
+        X = [line.strip(' \n') for line in f]
+    X = np.array(X[1::SUBSAMPLE], dtype=np.float64)
+    X = torch.from_numpy(X).float()
+    X = X/abs(X).max()
 
     with open(f'dataset/SNR10/QPSK/sym_tx_rollOff1_batch1', 'r') as f:
         y = [line.strip(' \n').split() for line in f]
         y = np.array(y[1::], dtype=np.float64)
 
-    specgram = torchaudio.transforms.Spectrogram(
-        n_fft=127, win_length=4)(torch.from_numpy(real).unsqueeze(0))
-
-    print("Shape of spectrogram: {}".format(specgram.size()))
-
     plt.figure()
-    # plt.imshow(specgram.log2()[0, :, :].numpy())
-    plt.plot(real)
+    plt.plot(X, label='Input')
+    denoiser = models.DeNoiser()
+    denoiser.to(DEVICE)
+    denoiser.load_state_dict(torch.load("weights/Noise.pt"))
+    for p in denoiser.parameters():
+        p.requires_grad = False
+    denoiser.eval()
+    plt.plot(denoiser(X.to(DEVICE)).cpu(), label='Output')
+    plt.title("Denoising")
     plt.show()

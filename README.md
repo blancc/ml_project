@@ -1,5 +1,13 @@
 # Machine Learning Project
-*Short description*
+The pulse shaping techniques is widely
+used in many communication systems.
+We know, thanks to statistics and detection theories that with an Additive White
+Gaussian Noise (AWGN) channel, we get
+the optimal detection with the matched
+filter. We propose to use a different
+approach with Neural Networks to see if
+it can provide similar signal detection.
+
 
 ## To get started
 
